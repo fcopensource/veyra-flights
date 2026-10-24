@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The app draws itself with Compose; this theme only covers the moment before it starts. -->
+    <style name="Theme.VeyraFlights" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+    <style name="Theme.VeyraFlights.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.VeyraFlights</item>
+    </style>
+    <color name="background">#F6F7FB</color>
+    <color name="splash">#5B5BF0</color>
+    <color name="icon_background">#16191E</color>
+</resources>

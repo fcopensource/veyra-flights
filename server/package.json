@@ -1,0 +1,12 @@
+{
+  "name": "veyra-flights-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The Veyra Flights app's server: flight search and booking through Duffel, or demo flights without a key.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/server.test.js"
+  }
+}

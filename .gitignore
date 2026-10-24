@@ -1,0 +1,18 @@
+# Secrets: never commit these.
+server/.env
+android/keystore.properties
+*.jks
+*.keystore
+
+# Build output and caches
+node_modules/
+android/.gradle/
+android/build/
+android/app/build/
+android/.kotlin/
+android/local.properties
+*.apk
+*.aab
+.idea/
+*.iml
+hs_err_pid*.log
