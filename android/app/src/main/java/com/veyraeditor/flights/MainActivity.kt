@@ -29,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.veyraeditor.flights.data.Api
+import com.veyraeditor.flights.data.DemoApi
 import com.veyraeditor.flights.data.TripsStore
 import com.veyraeditor.flights.ui.AppViewModel
 import com.veyraeditor.flights.ui.ConfirmationScreen
@@ -45,7 +46,8 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val factory = AppViewModel.Factory(Api(BuildConfig.API_URL), TripsStore(applicationContext))
+        val api = if (BuildConfig.DEMO_DATA) DemoApi() else Api(BuildConfig.API_URL)
+        val factory = AppViewModel.Factory(api, TripsStore(applicationContext))
         setContent {
             VeyraFlightsTheme {
                 VeyraFlightsApp(viewModel(factory = factory))

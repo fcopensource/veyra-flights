@@ -59,10 +59,10 @@ function slice(rnd, from, to, date, carrier, stops, startMinute) {
   const hub = stops ? BY_CODE.get(HUBS[carrier[0]]) : undefined;
   const legs = stops && hub && hub.code !== from.code && hub.code !== to.code ? [[from, hub], [hub, to]] : [[from, to]];
   let t = startMinute;
-  for (const [a, b] of legs) {
+  for (const [i, [a, b]] of legs.entries()) {
     const flying = Math.round(km(a, b) / 780 * 60 + 28 + rnd() * 12);
     segs.push({ flight: `${carrier[0]}${100 + Math.floor(rnd() * 899)}`, carrier: carrier[1], carrierCode: carrier[0], from: strip(a), to: strip(b), depart: local(date, t), arrive: local(date, t + flying), durationMinutes: flying, aircraft: km(a, b) > 3500 ? (rnd() < 0.5 ? "Boeing 787-9" : "Airbus A350-900") : (rnd() < 0.5 ? "Airbus A320neo" : "Boeing 737-8") });
-    t += flying + (legs.length > 1 ? 70 + Math.floor(rnd() * 150) : 0);
+    t += flying + (i < legs.length - 1 ? 70 + Math.floor(rnd() * 150) : 0); // a layover between legs
   }
   return { from: strip(from), to: strip(to), depart: segs[0].depart, arrive: segs.at(-1).arrive, durationMinutes: t - startMinute, stops: segs.length - 1, segments: segs };
 }

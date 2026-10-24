@@ -22,8 +22,18 @@ import java.util.concurrent.TimeUnit
 /** A problem worth showing to the person, in plain words. */
 class ApiException(message: String) : Exception(message)
 
+/** Where flights come from: the Veyra Flights server, or dummy flights made on the phone (DemoApi). */
+interface FlightsApi {
+    suspend fun health(): Health
+    suspend fun places(query: String): List<Place>
+    /** The mode ("demo", "test" or "live") and the offers. */
+    suspend fun search(q: SearchQuery): Pair<String, List<Offer>>
+    suspend fun offer(id: String): Offer
+    suspend fun book(offerId: String, passengers: List<PassengerForm>): Booking
+}
+
 /** Talks to the Veyra Flights server. */
-class Api(private val baseUrl: String, private val appKey: String = "") {
+class Api(private val baseUrl: String, private val appKey: String = "") : FlightsApi {
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS) // flight searches can take a while
@@ -61,14 +71,14 @@ class Api(private val baseUrl: String, private val appKey: String = "") {
         }
     }
 
-    suspend fun health(): Health = json.decodeFromString(call("GET", "/health"))
+    override suspend fun health(): Health = json.decodeFromString(call("GET", "/health"))
 
-    suspend fun places(query: String): List<Place> {
+    override suspend fun places(query: String): List<Place> {
         val url = "http://x/api/places".toHttpUrl().newBuilder().addQueryParameter("q", query).build()
         return json.decodeFromString<PlacesReply>(call("GET", "/api/places?${url.encodedQuery}")).places
     }
 
-    suspend fun search(q: SearchQuery): Pair<String, List<Offer>> {
+    override suspend fun search(q: SearchQuery): Pair<String, List<Offer>> {
         val body = buildJsonObject {
             put("from", q.from.code); put("to", q.to.code); put("depart", q.depart)
             q.returnDate?.let { put("return", it) }
@@ -78,9 +88,9 @@ class Api(private val baseUrl: String, private val appKey: String = "") {
         return reply.mode to reply.offers
     }
 
-    suspend fun offer(id: String): Offer = json.decodeFromString<OfferReply>(call("GET", "/api/offers/$id")).offer
+    override suspend fun offer(id: String): Offer = json.decodeFromString<OfferReply>(call("GET", "/api/offers/$id")).offer
 
-    suspend fun book(offerId: String, passengers: List<PassengerForm>): Booking {
+    override suspend fun book(offerId: String, passengers: List<PassengerForm>): Booking {
         val body = buildJsonObject {
             put("offerId", offerId)
             putJsonArray("passengers") {

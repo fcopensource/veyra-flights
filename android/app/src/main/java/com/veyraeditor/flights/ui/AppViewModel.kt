@@ -3,7 +3,7 @@ package com.veyraeditor.flights.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.veyraeditor.flights.data.Api
+import com.veyraeditor.flights.data.FlightsApi
 import com.veyraeditor.flights.data.Booking
 import com.veyraeditor.flights.data.Cabin
 import com.veyraeditor.flights.data.Filters
@@ -55,7 +55,7 @@ sealed interface BookingState {
     data class Done(val booking: Booking) : BookingState
 }
 
-class AppViewModel(private val api: Api, private val store: TripsStore) : ViewModel() {
+class AppViewModel(private val api: FlightsApi, private val store: TripsStore) : ViewModel() {
     private val _form = MutableStateFlow(SearchForm())
     val form = _form.asStateFlow()
     private val _results = MutableStateFlow<Results>(Results.Idle)
@@ -173,7 +173,7 @@ class AppViewModel(private val api: Api, private val store: TripsStore) : ViewMo
     fun resetBooking() { _booking.value = BookingState.Idle }
     fun removeTrip(id: String) = viewModelScope.launch { store.removeTrip(id) }
 
-    class Factory(private val api: Api, private val store: TripsStore) : ViewModelProvider.Factory {
+    class Factory(private val api: FlightsApi, private val store: TripsStore) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = AppViewModel(api, store) as T
     }

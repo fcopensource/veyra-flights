@@ -10,12 +10,10 @@ import androidx.test.core.app.ApplicationProvider
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureScreenRoboImage
-import com.veyraeditor.flights.data.Api
+import com.veyraeditor.flights.data.DemoApi
 import com.veyraeditor.flights.data.TripsStore
 import com.veyraeditor.flights.ui.AppViewModel
 import com.veyraeditor.flights.ui.theme.VeyraFlightsTheme
-import kotlinx.coroutines.runBlocking
-import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,8 +22,8 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Books a flight from start to finish against a running server (demo mode is fine: `npm start` in server/),
-* saving a picture of every screen to app/build/screens. Skipped when no server is running.
+ * Books a flight from start to finish with the app's dummy flights,
+ * saving a picture of every screen to app/build/screens.
  * Runs as Android 34 because Robolectric needs Java 21 for newer versions.
  */
 @OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
@@ -34,7 +32,6 @@ import org.robolectric.annotation.GraphicsMode
 @Config(sdk = [34], qualifiers = RobolectricDeviceQualifiers.Pixel7)
 class AppFlowTest {
     @get:Rule val rule = createComposeRule()
-    private val server = System.getProperty("veyra.server") ?: "http://127.0.0.1:8787"
 
     private fun shot(name: String) {
         rule.waitForIdle()
@@ -46,9 +43,7 @@ class AppFlowTest {
 
     @Test
     fun bookAFlight() {
-        val api = Api(server)
-        assumeTrue("no server at $server", runCatching { runBlocking { api.health() } }.isSuccess)
-        val vm = AppViewModel(api, TripsStore(ApplicationProvider.getApplicationContext()))
+        val vm = AppViewModel(DemoApi(latency = 0), TripsStore(ApplicationProvider.getApplicationContext()))
         rule.setContent { VeyraFlightsTheme { VeyraFlightsApp(vm) } }
 
         waitFor("Where to next?")
